@@ -10,7 +10,7 @@ Update system and install required packages:
 
 ```bash
 sudo apt update && sudo apt -y upgrade
-sudo apt install g++ make libreadline-dev re2c libpcre3-dev libxext-dev libraw1394-dev libusb-1.0-0-dev bzip2 libusb-dev libtirpc-dev git wget
+sudo apt install g++ make libreadline-dev re2c libpcre3-dev libxext-dev libraw1394-dev libusb-1.0-0-dev bzip2 libusb-dev libtirpc-dev libnet1-dev libpcap-dev git wget
 ```
 Prepare for EPICS folder:
 
@@ -26,7 +26,7 @@ cd epics
 
 I always put EPICS in opt directory, sometimes with symlink and versioning.
 
-## 2. Get and Install EPICS-Base
+## 2. Get and Compile EPICS-Base
 
 Get latest EPICS Base Release, always check on [EPICS Github](https://github.com/epics-base/epics-base).
 ```bash
@@ -39,13 +39,15 @@ tar -xvf base-7.0.9.tar.gz
 mv base-7.0.9 base
 ```
 
-Move to EPICS Base directory, then make
+Move to EPICS Base directory, then compile.
 ```bash
 cd base
 make -j
 ```
 
 Wait until everything finish.
+ - Always finish the compilation process before setting the environment.
+ - I found some machine unable to compile because some environment variable already set (happened when I try to reinstall EPICS after removing entire /opt partition by accident)
 
 ## 3. Set Environment
 
@@ -63,6 +65,9 @@ export PATH=${EPICS_BASE}/bin/${EPICS_HOST_ARCH}:${PATH}
 ```
 
 Reboot the system (or source the file).
+- I put the environment variable for entire user in the system.
+- you can put the variable in your bash.rc or profile at your home.
+- other alternative is to put in /etc/environment.
 
 ## 4. Get SYNAPPS
 
@@ -71,3 +76,31 @@ synApps installation is set by synApps assemble script. Check to [EPICS SYNAPP G
 wget https://github.com/EPICS-synApps/assemble_synApps/releases/download/R6-3/assemble_synApps
 ```
 
+## 5. Edit assemble_synApps file
+
+The assemble_synApps script provide some control for your SynApps package. here some point I usually did:
+- Change the $EPICS_BASE parameter to epics base directory
+- Change the $SYNAPPS_DIR to your liking (mine is *synapps*)
+- Select the modules you want to install by comment/uncomment the modules. Ofcourse you can install everything.
+
+## 6. Get SYNAPPS modules
+
+Get the module packages by set the assemble_synApps to executable then run it.
+```bash
+chmod +x assemble_synApps
+./assemble_synApps
+```
+
+After all process finish, the package will be in $SYNAPPS_DIR/support (mine is ./synapps/support)
+
+## 7. Compile SYNAPPS Modules
+
+Move to SynApps directory then compile.
+```bash
+cd  ./synapps/support
+make
+```
+
+Compilation process is not always a smooth ride. here some problem I found and the counter measure.
+- Lack of package requirement (such as libusb, libtirpc, libpcap etc) in some of modules -> install the package (already put in prerequisites)
+- TIRPC module not found in linux_arm in asyn -> manually change $TIRPCS=YES in ./asyn-<version>/configure/CONFIG_SITE
