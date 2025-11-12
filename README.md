@@ -106,3 +106,5 @@ Compilation process is not always a smooth ride. here some problem I found and t
 - Lack of package requirement (such as libusb, libtirpc, libpcap etc) in some of modules -> install the package (already put in prerequisites)
 - TIRPC module not found in linux_arm in asyn -> manually change $TIRPCS=YES in ./asyn-<version>/configure/CONFIG_SITE
 - configure/RELEASE failed to override modules RELEASE file during synapps installation -> believe it or not, I just rerun assemble_synapps script soo many times then it fix it self.
+- in Raspberry Pi (or in ARM based, I think), some areaDetector Plugins can't be installed.
+- in Raspberry Pi, DXP module can't be install. ARM doesn't have x86 style IO ports which correlated to sys/io.h
