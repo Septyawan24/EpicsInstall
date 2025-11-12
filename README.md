@@ -101,6 +101,8 @@ cd  ./synapps/support
 make
 ```
 
+## 8. Experience is The Best Teacher 
 Compilation process is not always a smooth ride. here some problem I found and the counter measure.
 - Lack of package requirement (such as libusb, libtirpc, libpcap etc) in some of modules -> install the package (already put in prerequisites)
 - TIRPC module not found in linux_arm in asyn -> manually change $TIRPCS=YES in ./asyn-<version>/configure/CONFIG_SITE
+- configure/RELEASE failed to override modules RELEASE file during synapps installation -> believe it or not, I just rerun assemble_synapps script soo many times then it fix it self.
